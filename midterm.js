@@ -9,6 +9,7 @@
   let mapFunctions = "";
   let gen = "All";
   let leg = "All";
+  let typeFilter = "All";
   const colors = {
 
     "Bug": "#B0FD92",
@@ -103,11 +104,20 @@
       .enter()
       .append('div')
         .attr('class', 'types')
+        .attr('id', function(d) { return d })
         .style('width', '50px')
         .style('height', '20px')
         .style('display', 'flex')
-        // .style('justify-content', 'space-evenly')
         .style('align-items', 'center')
+        .on('click', (d) => {
+          // console.log(d)
+          if (d != typeFilter) {
+            typeFilter = d;
+          } else {
+            typeFilter = 'All';
+          }
+          replot();
+        })
         .append('div')
           .attr('class', 'colors')
           .style('width', '10px')
@@ -119,12 +129,7 @@
           .append('p')
           .text(function(d) { return d })
           .style('font', '5px sans-serif');
-
-/*     d3.selectAll('.types').selectAll('.p')
-      .data(types)
-      .enter()
-      .append('p')
-        .text(function(d) { return d });   */
+      
   }
 
   // make scatter plot with trend line
@@ -210,8 +215,7 @@
       genFilter.on('change', (d) => {
           gen = d3.select('#gen-filter').property('value');
           // console.log(gen);
-          d3.selectAll('circle').remove();
-          plotData(mapFunctions);
+          replot();
       });
 
       let legFilter = legDiv.append('select').attr('id', 'leg-filter')
@@ -226,9 +230,14 @@
         legFilter.on('change', (d) => {
             leg = d3.select('#leg-filter').property('value');
             // console.log(leg);
-            d3.selectAll('circle').remove();
-            plotData(mapFunctions);
+            replot();
         });
+  }
+
+  // replot data with appropriate filters
+  function replot() {
+    d3.selectAll('circle').remove();
+    plotData(mapFunctions);
   }
 
   // make title and axes labels
@@ -273,6 +282,13 @@
                     } else {
                         return d['Legendary'] == leg 
                     }
+                })
+                .filter(function(d) {
+                  if (typeFilter == 'All') {
+                    return d
+                  } else {
+                    return d['Type 1'] == typeFilter
+                  }
                 }))
       .enter()
       .append('circle')
