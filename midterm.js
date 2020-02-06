@@ -6,6 +6,9 @@
   let svgContainer = ""; // keep SVG reference in global scope
   let menu = "";
   let tooltip = "";
+  let mapFunctions = "";
+  let gen = "all";
+  let leg = "all";
   const colors = {
 
     "Bug": "#B0FD92",
@@ -50,6 +53,16 @@
       .append('svg')
       .attr('width', 750)
       .attr('height', 500);
+    
+    menu = d3.select('body').append('div').attr('id', 'menu')
+      .style('width', '750px')
+      .style('height', '300px')
+      .style('display', 'flex')
+      .style('justify-content', 'space-evenly');
+
+    // create tooltip
+    makeTooltip();
+    
     // d3.csv is basically fetch but it can be be passed a csv file as a parameter
     d3.csv("pokemon.csv")
       .then((data) => makeScatterPlot(data));
@@ -67,7 +80,7 @@
     let axesLimits = findMinMax(sp_def_data, total_data);
 
     // draw axes and return scaling + mapping functions
-    let mapFunctions = drawAxes(axesLimits, "Sp. Def", "Total");
+    mapFunctions = drawAxes(axesLimits, "Sp. Def", "Total");
 
     // plot data as points and add tooltip functionality
     plotData(mapFunctions);
@@ -77,9 +90,6 @@
 
     // make drop downs and create change event
     dropDown();
-
-    // create tooltip
-    makeTooltip();
   }
 
     // make tooltip
@@ -104,13 +114,7 @@
 
   // make drop downs
   function dropDown() {
-    menu = d3.select('body').append('div').attr('id', 'menu')
-            .style('width', '750px')
-            .style('height', '300px')
-            .style('display', 'flex')
-            .style('justify-content', 'space-evenly');
-
-      let genFilter = menu.append('select')
+      let genFilter = menu.append('select').attr('id', 'gen-filter')
 
       genFilter.append('option')
         .attr('value', 'all')
@@ -122,17 +126,31 @@
             .text(i)
       }
 
-      let legFilter = menu.append('select')
+      genFilter.on('change', (d) => {
+          gen = d3.select('#gen-filter').property('value');
+          // console.log(gen);
+          d3.selectAll('circle').remove();
+          plotData(mapFunctions);
+      });
+
+      let legFilter = menu.append('select').attr('id', 'leg-filter')
       
       legFilter.append('option')
         .attr('value', 'all')
         .text('All')
       legFilter.append('option')
-        .attr('value', 'true')
+        .attr('value', 'True')
         .text('True')
       legFilter.append('option')
-        .attr('value', 'false')
+        .attr('value', 'False')
         .text('False')
+      
+        legFilter.on('change', (d) => {
+            leg = d3.select('#leg-filter').property('value');
+            // console.log(leg);
+            d3.selectAll('circle').remove();
+            plotData(mapFunctions);
+        });
   }
 
   // make title and axes labels
@@ -158,14 +176,6 @@
   // plot all the data points on the SVG
   // and add tooltip functionality
   function plotData(map) {
-    /* // get population data as array
-    let pop_data = data.map((row) => +row["pop_mlns"]);
-    let pop_limits = d3.extent(pop_data);
-    // make size scaling function for population
-    let pop_map_func = d3.scaleLinear()
-      .domain([pop_limits[0], pop_limits[1]])
-      .range([3, 20]); */
-
     // mapping functions
     let xMap = map.x;
     let yMap = map.y;
@@ -173,8 +183,20 @@
 
     // append data to SVG and plot as points
     svgContainer.selectAll('.circle')
-      .data(data.filter(function(d) { return +d['Generation'] == 1 })
-                .filter(function(d) { return d['Legendary'] == 'False' }))
+      .data(data.filter(function(d) { 
+          if (gen == 'all') {
+            return d
+          } else {
+            return +d['Generation'] == gen
+          }
+        })
+                .filter(function(d) { 
+                    if (leg == 'all') {
+                        return d
+                    } else {
+                        return d['Legendary'] == leg 
+                    }
+                }))
       .enter()
       .append('circle')
         .attr('cx', xMap)
