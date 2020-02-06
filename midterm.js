@@ -16,7 +16,7 @@
 
     "Dark": "#026C94",
 
-    "Dragon": "orange",
+    "Dragon": "#FFA748",
 
     "Electric": "#F2FF24",
 
@@ -26,17 +26,19 @@
 
     "Fire": "#D70000",
 
+    "Flying": "#00B9DF",
+
     "Ghost": "#A0BBE2",
 
     "Grass": "#6EC44D",
 
     "Ground": "#B78655",
 
-    "Ice": "#8AE2E6",
+    "Ice": "#B4F6F9",
 
     "Normal": "#F8E084",
 
-    "Poison": "#B5A1C2",
+    "Poison": "#CDA8E4",
 
     "Psychic": "#896ABF",
 
@@ -96,7 +98,7 @@
     
     legend.append('p').text('Type 1 Legend').style('font', '10pt sans-serif');
 
-    let types = ['Bug', 'Dark', 'Dragon', 'Electric', 'Fairy', 'Fighting', 'Fire', 'Ghost',
+    let types = ['Bug', 'Dark', 'Dragon', 'Electric', 'Fairy', 'Fighting', 'Fire', 'Flying', 'Ghost',
               'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Steel', 'Water']
     
     legend.selectAll('.div')
