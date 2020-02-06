@@ -13,7 +13,7 @@
 
     "Bug": "#B0FD92",
 
-    "Dark": "#A0CBE8",
+    "Dark": "#026C94",
 
     "Dragon": "orange",
 
@@ -93,7 +93,7 @@
                       .style('margin', '10px')
                       .style('padding', '10px');
     
-    legend.append('p').text('Type Legend').style('font', '12px sans-serif');
+    legend.append('p').text('Type Legend').style('font', '10pt sans-serif');
 
     let types = ['Bug', 'Dark', 'Dragon', 'Electric', 'Fairy', 'Fighting', 'Fire', 'Ghost',
               'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Steel', 'Water']
@@ -112,6 +112,7 @@
           .attr('class', 'colors')
           .style('width', '10px')
           .style('height', '10px')
+          .style('border-radius', '3px')
           .style('margin-right', '3px')
           .style('background', function(d) { return colors[d] })
           .select(function() { return this.parentNode })
@@ -174,10 +175,31 @@
       .style('height', '50')
       .style('display', 'flex')
       .style('justify-content', 'space-evenly')
-      .style('align-content', 'center');
+      .style('align-content', 'center')
+      .style('border', '2px solid grey')
+      .style('border-radius', '8px')
+      .style('padding', '5px');
+    
+    let genDiv = filters.append('div')
+      .style('display', 'flex')
+      .style('flex-direction', 'column')
+      .style('align-items', 'center')
+      .style('justify-content', 'space-evenly');
 
-    let genFilter = filters.append('select').attr('id', 'gen-filter')
+    let legDiv = filters.append('div')
+      .style('display', 'flex')
+      .style('flex-direction', 'column')
+      .style('align-items', 'center')
+      .style('justify-content', 'space-evenly');
+
+    genDiv.append('p').text('Generation:')
+      .style('font', '5px sans-serif');
+    legDiv.append('p').text('Legendary:')
+      .style('font', '5px sans-serif');
+
     let gens = ['All', '1', '2', '3', '4', '5', '6'];
+    let genFilter = genDiv.append('select').attr('id', 'gen-filter');
+
     genFilter.selectAll('.option')
       .data(gens)
       .enter()
@@ -192,7 +214,7 @@
           plotData(mapFunctions);
       });
 
-      let legFilter = filters.append('select').attr('id', 'leg-filter')
+      let legFilter = legDiv.append('select').attr('id', 'leg-filter')
       let legs = ['All', 'True', 'False'];
       legFilter.selectAll('.option')
         .data(legs)
@@ -300,7 +322,7 @@
 
     // function to scale y
     let yScale = d3.scaleLinear()
-      .domain([limits.yMax + 50, limits.yMin - 5]) // give domain buffer
+      .domain([limits.yMax + 50, limits.yMin - 20]) // give domain buffer
       .range([50, 450]);
 
     // yMap returns a scaled y value from a row of data
