@@ -7,8 +7,8 @@
   let menu = "";
   let tooltip = "";
   let mapFunctions = "";
-  let gen = "all";
-  let leg = "all";
+  let gen = "All";
+  let leg = "All";
   const colors = {
 
     "Bug": "#B0FD92",
@@ -49,23 +49,81 @@
 
   // load data and make scatter plot after window loads
   window.onload = function() {
+    d3.select('body')
+      .style('display', 'flex')
+      .style('flex-wrap', 'wrap')
+      .style('margin', '30px');
+
     svgContainer = d3.select('body')
       .append('svg')
       .attr('width', 750)
-      .attr('height', 500);
-    
-    menu = d3.select('body').append('div').attr('id', 'menu')
-      .style('width', '750px')
-      .style('height', '300px')
+      .attr('height', 500)
+      .style('font', '8pt sans-serif');
+
+    menu = d3.select('body').attr('class', 'menu')
+      .append('div')
       .style('display', 'flex')
-      .style('justify-content', 'space-evenly');
+      .style('flex-direction', 'column')
+      .style('justify-content', 'space-evenly')
+      .style('align-content', 'center');
 
     // create tooltip
     makeTooltip();
-    
+
+    // make legend
+    makeLegend();
+
+    // make drop downs and create change event
+    dropDown();
+
     // d3.csv is basically fetch but it can be be passed a csv file as a parameter
     d3.csv("pokemon.csv")
       .then((data) => makeScatterPlot(data));
+  }
+
+  // make legend
+  function makeLegend() {
+    let legend = menu.append('div').attr('class', 'legend')
+                      .style('display', 'flex')
+                      .style('flex-direction', 'column')
+                      .style('justify-content', 'space-evenly')
+                      .style('align-items', 'center')
+                      .style('border', '2px solid grey')
+                      .style('border-radius', '8px')
+                      .style('margin', '10px')
+                      .style('padding', '10px');
+    
+    legend.append('p').text('Type Legend').style('font', '12px sans-serif');
+
+    let types = ['Bug', 'Dark', 'Dragon', 'Electric', 'Fairy', 'Fighting', 'Fire', 'Ghost',
+              'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Steel', 'Water']
+    
+    legend.selectAll('.div')
+      .data(types)
+      .enter()
+      .append('div')
+        .attr('class', 'types')
+        .style('width', '50px')
+        .style('height', '20px')
+        .style('display', 'flex')
+        // .style('justify-content', 'space-evenly')
+        .style('align-items', 'center')
+        .append('div')
+          .attr('class', 'colors')
+          .style('width', '10px')
+          .style('height', '10px')
+          .style('margin-right', '3px')
+          .style('background', function(d) { return colors[d] })
+          .select(function() { return this.parentNode })
+          .append('p')
+          .text(function(d) { return d })
+          .style('font', '5px sans-serif');
+
+/*     d3.selectAll('.types').selectAll('.p')
+      .data(types)
+      .enter()
+      .append('p')
+        .text(function(d) { return d });   */
   }
 
   // make scatter plot with trend line
@@ -87,9 +145,6 @@
 
     // draw title and axes labels
     makeLabels();
-
-    // make drop downs and create change event
-    dropDown();
   }
 
     // make tooltip
@@ -114,17 +169,21 @@
 
   // make drop downs
   function dropDown() {
-      let genFilter = menu.append('select').attr('id', 'gen-filter')
+    let filters = menu.append('div')
+      .style('width', '150px')
+      .style('height', '50')
+      .style('display', 'flex')
+      .style('justify-content', 'space-evenly')
+      .style('align-content', 'center');
 
-      genFilter.append('option')
-        .attr('value', 'all')
-        .text('All')
-
-      for (let i = 1; i < 7; i++) {
-          genFilter.append('option')
-            .attr('value', i)
-            .text(i)
-      }
+    let genFilter = filters.append('select').attr('id', 'gen-filter')
+    let gens = ['All', '1', '2', '3', '4', '5', '6'];
+    genFilter.selectAll('.option')
+      .data(gens)
+      .enter()
+      .append('option')
+        .attr('value', function(d) { return d })
+        .text(function(d) { return d });
 
       genFilter.on('change', (d) => {
           gen = d3.select('#gen-filter').property('value');
@@ -133,17 +192,14 @@
           plotData(mapFunctions);
       });
 
-      let legFilter = menu.append('select').attr('id', 'leg-filter')
-      
-      legFilter.append('option')
-        .attr('value', 'all')
-        .text('All')
-      legFilter.append('option')
-        .attr('value', 'True')
-        .text('True')
-      legFilter.append('option')
-        .attr('value', 'False')
-        .text('False')
+      let legFilter = filters.append('select').attr('id', 'leg-filter')
+      let legs = ['All', 'True', 'False'];
+      legFilter.selectAll('.option')
+        .data(legs)
+        .enter()
+        .append('option')
+        .attr('value', function(d) { return d })
+        .text(function(d) { return d });
       
         legFilter.on('change', (d) => {
             leg = d3.select('#leg-filter').property('value');
@@ -156,20 +212,19 @@
   // make title and axes labels
   function makeLabels() {
     svgContainer.append('text')
-      .attr('x', 250)
-      .attr('y', 30)
-      .style('font-size', '14pt')
-      .text("Pokemon: Special Defense vs Total Stats");
+      .attr('x', 200)
+      .attr('y', 20)
+      .style('font-size', '16pt')
+      .text("Pokemon: Special Defense vs Total Stats")
+      .attr('fill', 'grey');
 
     svgContainer.append('text')
       .attr('x', 350 )
       .attr('y', 490)
-      .style('font-size', '10pt')
       .text('Sp. Def');
 
     svgContainer.append('text')
-      .attr('transform', 'translate(15, 275)rotate(-90)')
-      .style('font-size', '10pt')
+      .attr('transform', 'translate(15, 260)rotate(-90)')
       .text('Total');
   }
 
@@ -184,14 +239,14 @@
     // append data to SVG and plot as points
     svgContainer.selectAll('.circle')
       .data(data.filter(function(d) { 
-          if (gen == 'all') {
+          if (gen == 'All') {
             return d
           } else {
             return +d['Generation'] == gen
           }
         })
                 .filter(function(d) { 
-                    if (leg == 'all') {
+                    if (leg == 'All') {
                         return d
                     } else {
                         return d['Legendary'] == leg 
