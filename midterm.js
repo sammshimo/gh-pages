@@ -109,6 +109,7 @@
         .style('height', '20px')
         .style('display', 'flex')
         .style('align-items', 'center')
+        .style('cursor', 'pointer')
         .on('click', (d) => {
           // console.log(d)
           if (d != typeFilter) {
