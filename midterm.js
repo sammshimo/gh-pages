@@ -94,7 +94,7 @@
                       .style('margin', '10px')
                       .style('padding', '10px');
     
-    legend.append('p').text('Type Legend').style('font', '10pt sans-serif');
+    legend.append('p').text('Type 1 Legend').style('font', '10pt sans-serif');
 
     let types = ['Bug', 'Dark', 'Dragon', 'Electric', 'Fairy', 'Fighting', 'Fire', 'Ghost',
               'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Steel', 'Water']
